@@ -1,6 +1,6 @@
 ratelimit
 =====
-ratelimit is for python to limit to limit flow for web service.
+ratelimit is for python to limit the flow for web service.
 
 
 Example:
