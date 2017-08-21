@@ -17,6 +17,9 @@ class Clock(object):
 		time.sleep(float(duration) / 1000000)
 
 
+infinity_duration = 10000000000000
+
+
 class Bucket(object):
 	"""docstring for Bucket"""
 
@@ -32,6 +35,51 @@ class Bucket(object):
 		self.avail_tick = 0
 
 		self.mu = threading.Lock()
+
+	def wait(self, count):
+		"""
+		"""
+		d, ok = self.take(tb.clock.now(), count, infinity_duration)
+		if d > 0:
+			self.clock.sleep(d)
+
+	def wait_max_duration(count ,max_wait):
+		"""
+		"""
+		d, ok = self.take_max_duration(count, max_wait)
+		if d > 0:
+			self.clock.sleep(d)
+
+	def take_max_duration(count, max_wait):
+		"""
+		"""
+		return self.take(self.clock.now(), count, infinity_duration)
+
+	def take(self, now, count, max_wait):
+		"""
+		"""
+
+		if count <= 0:
+			return 0, True
+
+		with self.mu:
+			current_tick = self.adjust(now)
+			avail = self.avail - count
+			if avail >= 0:
+				self.avail = avail
+				return 0, True
+
+			end_tick = current_tick + (-avail+self.quantum-1)/self.quantum
+			end_time = self.start_time + end_tick * self.fill_interval
+			wait_time = end_time - now
+
+			if wait_time > max_wait:
+				return 0, False
+
+			self.avail = avail
+			return wait_time, True
+
+
 
 	def take_available(self, count):
 		"""
@@ -56,10 +104,10 @@ class Bucket(object):
 	def adjust(self, now):
 		"""
 		"""
-		if self.avail >= self.capacity:
-			return
-
 		current_tick = (now-self.start_time)/self.fill_interval
+		
+		if self.avail >= self.capacity:
+			return current_tick
 
 		self.avail += (current_tick - self.avail_tick) * self.quantum
 
@@ -68,7 +116,21 @@ class Bucket(object):
 
 		self.avail_tick = current_tick
 
-		return
+		return current_tick
+
+	def available(self):
+		"""
+		"""
+		with self.mu:
+			self.adjust(self.clock.now())
+
+		return self.avail
+
+	def capacity(self):
+		"""
+		"""
+		return self.capacity
+
 
 def new_bucket(fill_interval, capacity):
 	"""
