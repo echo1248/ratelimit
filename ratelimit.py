@@ -57,6 +57,7 @@ class Bucket(object):
 
 	def take(self, now, count, max_wait):
 		"""
+		  获取令牌，并添加最大等待时间
 		"""
 
 		if count <= 0:
@@ -80,9 +81,9 @@ class Bucket(object):
 			return wait_time, True
 
 
-
 	def take_available(self, count):
 		"""
+		    获取count 的令牌
 		"""
 
 		if count <= 0:
@@ -103,6 +104,7 @@ class Bucket(object):
 
 	def adjust(self, now):
 		"""
+		  根据时间调整参数
 		"""
 		current_tick = (now-self.start_time)/self.fill_interval
 		
