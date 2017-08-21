@@ -144,6 +144,21 @@ def new_bucket_with_clock(fill_interval, capacity, clock):
 	"""
 	return new_bucket_with_quantum_and_clock(fill_interval, capacity, 1, clock)
 
+def new_bucket_with_rate(rate, capacity):
+	"""
+	"""
+	return new_bucket_with_rate_and_clock(rate, capacity, Clock())
+
+def new_bucket_with_rate_and_clock(rate, capacity, clock):
+	"""
+	"""
+	pass
+
+def new_bucket_with_quantum(fill_interval, capacity, quantum):
+	"""
+	"""
+	return new_bucket_with_quantum_and_clock(fill_interval, capacity, quantum, Clock())
+
 def new_bucket_with_quantum_and_clock(fill_interval, capacity, quantum, clock):
 	"""
 	"""
